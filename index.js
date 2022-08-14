@@ -131,6 +131,10 @@ app.get("/api/get", (req, res) => {
             })
 
         }
+        if (q[0] == 'test') {
+           res.send('page is ok')
+
+        }
     }
 
 
@@ -948,7 +952,7 @@ async function setValues(valus) {
 
 
 
-fetchData3();
+// fetchData3();
 // fetchData5();
 
 function fetchData5() {
