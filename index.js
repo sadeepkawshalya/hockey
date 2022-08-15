@@ -135,7 +135,7 @@ app.get("/api/get", (req, res) => {
         }
 
         if (q[0] == 'test') {
-            res.send('result2')
+            res.send('result3')
             
 
         }
@@ -187,7 +187,7 @@ function create_tables() {
 
 }
 
-add_new_data();
+// add_new_data();
 
 async function add_new_data() {
 
@@ -201,7 +201,7 @@ async function add_new_data() {
     sesc = data2.entries
     console.log(sesc);
 
-    for (let b = 0; b < 1; b++) {
+    for (let b = 0; b < 2; b++) {
 
         let se = sesc[b].set_in_context.season
         const response = await fetch(
@@ -214,7 +214,7 @@ async function add_new_data() {
 
 
 
-        for (let i = 0; i < club.length; i++) {
+        for (let i = 0; i < 2; i++) {
 
             console.log(i);
             k = 0
