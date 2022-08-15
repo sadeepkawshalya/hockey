@@ -196,7 +196,7 @@ async function create_tables() {
 
 }
 
-// add_new_data();
+add_new_data();
 
 async function add_new_data() {
 
