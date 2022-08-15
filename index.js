@@ -20,12 +20,20 @@ const cors = require("cors")
 // });
 
 const db = mysql.createPool({
-    host: "162.214.155.142",
-    user: "nizayosl_kawsad",
+    host: "awsdatabase.cf4ufppnbflh.ap-south-1.rds.amazonaws.com",
+    user: "admin",
     password: "Pioneer072",
-    database: "nizayosl_new_table",
+    database: "sys",
 
 });
+
+// const db = mysql.createPool({
+//     host: "162.214.155.142",
+//     user: "nizayosl_kawsad",
+//     password: "Pioneer072",
+//     database: "nizayosl_new_table",
+
+// });
 
 let PORT = process.env.PORT || 3001;
 
@@ -136,7 +144,7 @@ app.get("/api/get", (req, res) => {
         }
 
         if (q[0] == 'test') {
-            res.send('result2')
+            res.send('result23')
             
 
         }
