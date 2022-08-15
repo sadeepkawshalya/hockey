@@ -135,7 +135,7 @@ app.get("/api/get", (req, res) => {
         }
 
         if (q[0] == 'test') {
-            res.send('result')
+            res.send('result2')
             
 
         }
@@ -187,7 +187,7 @@ function create_tables() {
 
 }
 
-// add_new_data();
+add_new_data();
 
 async function add_new_data() {
 
