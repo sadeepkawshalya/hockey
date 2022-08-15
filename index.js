@@ -150,7 +150,7 @@ app.get("/api/get", (req, res) => {
 
 create_tables();
 
-await function create_tables() {
+async function create_tables() {
     try {
         await fetch('https://api-v2.swissunihockey.ch/api/seasons')
             .then(response => response.json())
