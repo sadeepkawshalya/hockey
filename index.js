@@ -18,7 +18,7 @@ const cors = require("cors")
 //     database: "new_schema",
 
 // });
-let PORT = process.env.PORT || 3001;
+
 const db = mysql.createPool({
     host: "162.214.155.142",
     user: "nizayosl_kawsad",
@@ -27,6 +27,7 @@ const db = mysql.createPool({
 
 });
 
+let PORT = process.env.PORT || 3001;
 
 
 app.use(cors());
@@ -135,7 +136,7 @@ app.get("/api/get", (req, res) => {
         }
 
         if (q[0] == 'test') {
-            res.send('result3')
+            res.send('result2')
             
 
         }
@@ -149,9 +150,9 @@ app.get("/api/get", (req, res) => {
 
 create_tables();
 
-function create_tables() {
+await function create_tables() {
     try {
-        fetch('https://api-v2.swissunihockey.ch/api/seasons')
+        await fetch('https://api-v2.swissunihockey.ch/api/seasons')
             .then(response => response.json())
             .then(data2 => {
 
