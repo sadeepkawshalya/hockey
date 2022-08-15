@@ -1,3 +1,4 @@
+
 // import React, { useEffect, useState } from 'react';
 const axios = require("axios");
 const fetch = require("cross-fetch");
@@ -7,9 +8,6 @@ const express = require('express')
 const app = express()
 const mysql = require('mysql2')
 const cors = require("cors")
-
-let PORT = process.env.PORT || 3001;
-
 // const [dat,setDat] = useState([])
 
 
@@ -20,6 +18,7 @@ let PORT = process.env.PORT || 3001;
 //     database: "new_schema",
 
 // });
+let PORT = process.env.PORT || 3001;
 const db = mysql.createPool({
     host: "162.214.155.142",
     user: "nizayosl_kawsad",
@@ -27,6 +26,9 @@ const db = mysql.createPool({
     database: "nizayosl_new_table",
 
 });
+
+
+
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -131,10 +133,6 @@ app.get("/api/get", (req, res) => {
             })
 
         }
-        if (q[0] == 'test') {
-           res.send('page is ok')
-
-        }
     }
 
 
@@ -142,6 +140,363 @@ app.get("/api/get", (req, res) => {
 
 
 })
+
+create_tables();
+
+function create_tables() {
+    try {
+        fetch('https://api-v2.swissunihockey.ch/api/seasons')
+            .then(response => response.json())
+            .then(data2 => {
+
+
+
+                for (let h = 0; h < data2.entries.length; h++) {
+                    console.log(data2.entries[h].set_in_context.season);
+                    let se = data2.entries[h].set_in_context.season
+                    const cr = `CREATE TABLE ${se}_table (gameid INT NOT NULL,date TEXT(255) NULL,league TEXT(255) NULL,team1 TEXT(255) NULL,team2 TEXT(255) NULL,results TEXT(255) NULL,season TEXT(255) NULL,t1_0 TEXT(255) NULL, t1_5 TEXT(255) NULL,t1_10 TEXT(255) NULL,t1_15 TEXT(255) NULL,t1_20 TEXT(255) NULL,t1_25 TEXT(255) NULL,t1_30 TEXT(255) NULL,t1_35 TEXT(255) NULL,t1_40 TEXT(255) NULL,t1_45 TEXT(255) NULL,t1_50 TEXT(255) NULL,t1_55 TEXT(255) NULL,t1_60 TEXT(255) NULL,t2_0 TEXT(255) NULL,t2_5 TEXT(255) NULL,t2_10 TEXT(255) NULL,t2_15 TEXT(255) NULL,t2_20 TEXT(255) NULL,t2_25 TEXT(255) NULL,t2_30 TEXT(255) NULL,t2_35 TEXT(255) NULL,t2_40 TEXT(255) NULL,t2_45 TEXT(255) NULL,t2_50 TEXT(255) NULL,t2_55 TEXT(255) NULL,t2_60 TEXT(255) NULL,PRIMARY KEY (gameid), UNIQUE INDEX id${se}_table_UNIQUE (gameid ASC) VISIBLE);`
+
+                    db.query(cr, (err, result) => {
+                        if (err) {
+
+
+                            console.log('create table already exist');
+                        }
+                        else {
+
+
+                            console.log('create table new table added');
+
+                        }
+                    })
+
+
+                }
+
+            })
+    } catch (error) {
+        console.log('erro in creating tables');
+    }
+
+
+}
+
+add_new_data();
+
+async function add_new_data() {
+
+
+
+    const response = await fetch(
+        `https://api-v2.swissunihockey.ch/api/seasons`
+
+    );
+    const data2 = await response.json();
+    sesc = data2.entries
+    console.log(sesc);
+
+    for (let b = 0; b < 1; b++) {
+
+        let se = sesc[b].set_in_context.season
+        const response = await fetch(
+            `https://api-v2.swissunihockey.ch/api/clubs?season=${se}`
+
+        );
+        const data2 = await response.json();
+        club = data2.entries
+        console.log(se);
+
+
+
+        for (let i = 0; i < club.length; i++) {
+
+            console.log(i);
+            k = 0
+
+            while (1) {
+                k++
+
+
+                try {
+                    const response2 = await fetch(
+                        `https://api-v2.swissunihockey.ch/api/games?mode=club&season=${se}&club_id=${club[i].set_in_context.club_id}&page=${k}`
+
+                    );
+                    const data3 = await response2.json();
+
+                    console.log('set ', i, 'page ', k, data3.type);
+
+                    if (data3.type == 'table') {
+
+                        console.log('end ,', i);
+                    }
+                    else {
+                        break
+
+
+
+                    }
+                    datt = data3.data.regions[0].rows;
+                    for (let j = 0; j < datt.length; j++) {
+                        temp.push(parseInt(datt[j].link.ids[0]));
+                        temp.push(datt[j].cells[0].text[0]);
+                        temp.push(datt[j].cells[2].text[0]);
+                        temp.push(datt[j].cells[3].text[0]);
+                        temp.push(datt[j].cells[4].text[0]);
+                        temp.push(datt[j].cells[5].text[0]);
+
+                        temp.push(se)
+
+                        dat_finale.push(temp)
+
+                        const sqlIn = `INSERT INTO ${se}_table (gameid,date,league,team1,team2,results,season) VALUES (?)`
+                        db.query(sqlIn, [temp], (err, result) => {
+                            if (err) {
+
+
+                                console.log('kn');
+                            }
+                            else {
+
+
+                                console.log('kn32');
+
+                            }
+                        })
+                        temp = []
+
+
+                        await axios.get(`https://api-v2.swissunihockey.ch/api/game_events/${parseInt(datt[j].link.ids[0])}`)
+                            .then(data2 => {
+                                data2 = data2.data
+                                console.log(data2);
+                                let team1_val = [[''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
+                                let team2_val = [[''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
+
+                                if (data2.data.regions[0].rows.length == 0) {
+                                    console.log('no');
+                                }
+                                else {
+                                    for (let h = 0; h < data2.data.regions[0].rows.length; h++) {
+
+
+                                        if (parseInt(datt[j].link.ids[0]), data2.data.regions[0].rows[h].cells[1].text[0].includes('Torschütze')) {
+                                            let jk = data2.data.regions[0].rows[h].cells[0].text[0]
+
+                                            jk = jk.split(':')
+
+                                            console.log(h, "string.", 'score', data2.data.regions[0].rows[h].cells[0].text[0], data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', ''), 'team1', datt[j].cells[3].text[0].replaceAll(' ', ''), 'team2', datt[j].cells[4].text[0].replaceAll(' ', ''));
+                                            if (data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '') == datt[j].cells[3].text[0].replaceAll(' ', '') || data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '').includes(datt[j].cells[3].text[0].replaceAll(' ', '')) || datt[j].cells[3].text[0].replaceAll(' ', '').includes(data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', ''))) {
+                                                console.log('t1', parseFloat(jk[0]));
+                                                if (parseFloat(jk[0]) >= 60) {
+                                                    console.log('t1>60', parseFloat(jk[0]));
+                                                    team1_val[0] = [team1_val[0] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+
+                                                }
+                                                else if (60 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 55) {
+                                                    console.log('t1>55', parseFloat(jk[0]));
+                                                    team1_val[1] = [team1_val[1] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+
+                                                }
+
+                                                else if (55 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 50) {
+                                                    console.log('t1>50', parseFloat(jk[0]));
+                                                    team1_val[2] = [team1_val[2] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (50 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 45) {
+                                                    console.log('t1>45', parseFloat(jk[0]));
+                                                    team1_val[3] = [team1_val[3] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (45 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 40) {
+                                                    console.log('t1>40', parseFloat(jk[0]));
+                                                    team1_val[4] = [team1_val[4] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (40 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 35) {
+                                                    console.log('t1>35', parseFloat(jk[0]));
+                                                    team1_val[5] = [team1_val[5] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (35 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 30) {
+                                                    console.log('t1>30', parseFloat(jk[0]));
+                                                    team1_val[6] = [team1_val[6] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (30 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 25) {
+                                                    console.log('t1>25', parseFloat(jk[0]));
+                                                    team1_val[7] = [team1_val[7] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (25 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 20) {
+                                                    console.log('t1>20', parseFloat(jk[0]));
+                                                    team1_val[8] = [team1_val[8] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (20 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 15) {
+                                                    console.log('t1>15', parseFloat(jk[0]));
+                                                    team1_val[9] = [team1_val[9] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (15 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 10) {
+                                                    console.log('t1>10', parseFloat(jk[0]));
+                                                    team1_val[10] = [team1_val[10] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (10 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 5) {
+                                                    console.log('t1>5', parseFloat(jk[0]));
+                                                    team1_val[11] = [team1_val[11] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else {
+                                                    console.log('t1<5', parseFloat(jk[0]));
+                                                    team1_val[12] = [team1_val[12] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+
+
+
+
+
+
+
+                                            }
+                                            else if (data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '') == datt[j].cells[4].text[0].replaceAll(' ', '') || data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '').includes(datt[j].cells[4].text[0].replaceAll(' ', '')) || datt[j].cells[4].text[0].replaceAll(' ', '').includes(data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', ''))) {
+                                                console.log('t2', parseFloat(jk[0]));
+                                                if (parseFloat(jk[0]) >= 60) {
+                                                    console.log('t2>60', parseFloat(jk[0]));
+                                                    team2_val[0] = [team2_val[0] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+
+                                                }
+                                                else if (60 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 55) {
+                                                    console.log('t2>55', parseFloat(jk[0]));
+                                                    team2_val[1] = [team2_val[1] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+
+                                                else if (55 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 50) {
+                                                    console.log('t2>50', parseFloat(jk[0]));
+                                                    team2_val[2] = [team2_val[2] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (50 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 45) {
+                                                    console.log('t2>45', parseFloat(jk[0]));
+                                                    team2_val[3] = [team2_val[3] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (45 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 40) {
+                                                    console.log('t2>40', parseFloat(jk[0]));
+                                                    team2_val[4] = [team2_val[4] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (40 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 35) {
+                                                    console.log('t2>35', parseFloat(jk[0]));
+                                                    team2_val[5] = [team2_val[5] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (35 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 30) {
+                                                    console.log('t2>30', parseFloat(jk[0]));
+                                                    team2_val[6] = [team2_val[6] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (30 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 25) {
+                                                    console.log('t2>25', parseFloat(jk[0]));
+                                                    team2_val[7] = [team2_val[7] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (25 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 20) {
+                                                    console.log('t2>20', parseFloat(jk[0]));
+                                                    team2_val[8] = [team2_val[8] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (20 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 15) {
+                                                    console.log('t2>15', parseFloat(jk[0]));
+                                                    team2_val[9] = [team2_val[9] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (15 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 10) {
+                                                    console.log('t2>10', parseFloat(jk[0]));
+                                                    team2_val[10] = [team2_val[10] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else if (10 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 5) {
+                                                    console.log('t2>5', parseFloat(jk[0]));
+                                                    team2_val[11] = [team2_val[11] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+                                                else {
+                                                    console.log('t2<5', parseFloat(jk[0]));
+                                                    team2_val[12] = [team2_val[12] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                }
+
+
+
+                                            }
+
+                                        } else {
+                                            console.log(h, "not in the string.");
+                                        }
+
+                                    }
+
+                                    console.log(team1_val);
+                                    console.log(team2_val);
+
+
+                                    const sqlIn = `UPDATE ${se}_table SET t1_60 = "${team1_val[0][0]}",t1_55 = "${team1_val[1][0]}",t1_50 = "${team1_val[2][0]}",t1_45 = "${team1_val[3][0]}",
+                                    t1_40 = "${team1_val[4][0]}",t1_35 = "${team1_val[5][0]}",t1_30 = "${team1_val[6][0]}",t1_25 = "${team1_val[7][0]}",t1_20 = "${team1_val[8][0]}",
+                                    t1_15 = "${team1_val[9][0]}",t1_10 = "${team1_val[10][0]}",t1_5 = "${team1_val[11][0]}",t1_0 = "${team1_val[12][0]}" WHERE gameid = ${parseInt(datt[j].link.ids[0])};`
+                                    db.query(sqlIn, (err, result) => {
+                                        if (err) {
+
+
+                                            console.log('kn', err);
+                                        }
+                                        else {
+
+
+                                            console.log('kn32');
+
+                                        }
+                                    })
+
+                                    const sqlIn2 = `UPDATE ${se}_table SET t2_60 = "${team2_val[0][0]}",t2_55 = "${team2_val[1][0]}",t2_50 = "${team2_val[2][0]}",t2_45 = "${team2_val[3][0]}",
+                                    t2_40 = "${team2_val[4][0]}",t2_35 = "${team2_val[5][0]}",t2_30 = "${team2_val[6][0]}",t2_25 = "${team2_val[7][0]}",t2_20 = "${team2_val[8][0]}",
+                                    t2_15 = "${team2_val[9][0]}",t2_10 = "${team2_val[10][0]}",t2_5 = "${team2_val[11][0]}",t2_0 = "${team2_val[12][0]}" WHERE gameid = ${parseInt(datt[j].link.ids[0])};`
+                                    db.query(sqlIn2, (err, result) => {
+                                        if (err) {
+
+
+                                            console.log('kn');
+                                        }
+                                        else {
+
+
+                                            console.log('kn32');
+
+                                        }
+                                    })
+
+                                    team1_val = [[''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
+                                    team2_val = [[''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
+
+
+                                }
+
+                            })
+                            .catch(error => {
+                                console.log(error);
+                            })
+
+
+
+
+
+                    }
+
+
+                } catch (error) {
+
+                }
+
+            }
+
+
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+}
+
 
 let club = []
 
@@ -153,262 +508,262 @@ let dat_finale = []
 let k = 0
 //add_for();
 
-function add_for() {
-
-    let lisc = []
-    const sl = 'SELECT gameid,team1,team2 FROM 2021_table;'
-    db.query(sl, (error, result) => {
-        console.log('in', result.length);
-
-
-
-        setValues(result)
-
-
-    })
-
-
-
-}
-async function setValues(valus) {
-    lisc = valus
-    for (let l = 0; l <= 1000; l++) {
-
-        console.log(lisc[l].gameid);
-       
-            await axios.get(`https://api-v2.swissunihockey.ch/api/game_events/${lisc[l].gameid}`)
-                .then(data2 => {
-                    data2 = data2.data
-                    console.log(data2);
-                    let team1_val = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                    let team2_val = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-                    if (data2.data.regions[0].rows.length == 0) {
-                        console.log('no', l);
-                    }
-                    else {
-                        for (let h = 0; h < data2.data.regions[0].rows.length; h++) {
-                            console.log(l, h, lisc[l].gameid, data2.data.regions[0].rows[h].cells[1].text[0]);
-
-                            if (lisc[l].gameid, data2.data.regions[0].rows[h].cells[1].text[0].includes('Torschütze')) {
-                                let jk = data2.data.regions[0].rows[h].cells[0].text[0]
-
-                                jk = jk.split(':')
-
-                                console.log(h, "string.", 'score', data2.data.regions[0].rows[h].cells[0].text[0], data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', ''), 'team1', lisc[l].team1.replaceAll(' ', ''), 'team2', lisc[l].team2.replaceAll(' ', ''));
-                                if (data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '') == lisc[l].team1.replaceAll(' ', '') || data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '').includes(lisc[l].team1.replaceAll(' ', '')) || lisc[l].team1.replaceAll(' ', '').includes(data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', ''))) {
-                                    console.log('t1', parseFloat(jk[0]));
-                                    if (parseFloat(jk[0]) >= 60) {
-                                        console.log('t1>60', parseFloat(jk[0]));
-                                        team1_val[0] += 1
-                                    }
-                                    else if (60 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 55) {
-                                        console.log('t1>55', parseFloat(jk[0]));
-                                        team1_val[1] += 1
-                                    }
-
-                                    else if (55 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 50) {
-                                        console.log('t1>50', parseFloat(jk[0]));
-                                        team1_val[2] += 1
-                                    }
-                                    else if (50 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 45) {
-                                        console.log('t1>45', parseFloat(jk[0]));
-                                        team1_val[3] += 1
-                                    }
-                                    else if (45 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 40) {
-                                        console.log('t1>40', parseFloat(jk[0]));
-                                        team1_val[4] += 1
-                                    }
-                                    else if (40 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 35) {
-                                        console.log('t1>35', parseFloat(jk[0]));
-                                        team1_val[5] += 1
-                                    }
-                                    else if (35 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 30) {
-                                        console.log('t1>30', parseFloat(jk[0]));
-                                        team1_val[6] += 1
-                                    }
-                                    else if (30 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 25) {
-                                        console.log('t1>25', parseFloat(jk[0]));
-                                        team1_val[7] += 1
-                                    }
-                                    else if (25 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 20) {
-                                        console.log('t1>20', parseFloat(jk[0]));
-                                        team1_val[8] += 1
-                                    }
-                                    else if (20 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 15) {
-                                        console.log('t1>15', parseFloat(jk[0]));
-                                        team1_val[9] += 1
-                                    }
-                                    else if (15 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 10) {
-                                        console.log('t1>10', parseFloat(jk[0]));
-                                        team1_val[10] += 1
-                                    }
-                                    else if (10 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 5) {
-                                        console.log('t1>5', parseFloat(jk[0]));
-                                        team1_val[11] += 1
-                                    }
-                                    else {
-                                        console.log('t1<5', parseFloat(jk[0]));
-                                        team1_val[12] += 1
-                                    }
-
-
-
+// function add_for() {
+
+//     let lisc = []
+//     const sl = 'SELECT gameid,team1,team2 FROM 2021_table;'
+//     db.query(sl, (error, result) => {
+//         console.log('in', result.length);
+
+
+
+//         setValues(result)
+
+
+//     })
+
+
+
+// }
+// async function setValues(valus) {
+//     lisc = valus
+//     for (let l = 0; l <= 1000; l++) {
+
+//         console.log(lisc[l].gameid);
+
+//         await axios.get(`https://api-v2.swissunihockey.ch/api/game_events/${lisc[l].gameid}`)
+//             .then(data2 => {
+//                 data2 = data2.data
+//                 console.log(data2);
+//                 let team1_val = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+//                 let team2_val = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+//                 if (data2.data.regions[0].rows.length == 0) {
+//                     console.log('no', l);
+//                 }
+//                 else {
+//                     for (let h = 0; h < data2.data.regions[0].rows.length; h++) {
+//                         console.log(l, h, lisc[l].gameid, data2.data.regions[0].rows[h].cells[1].text[0]);
+
+//                         if (lisc[l].gameid, data2.data.regions[0].rows[h].cells[1].text[0].includes('Torschütze')) {
+//                             let jk = data2.data.regions[0].rows[h].cells[0].text[0]
+
+//                             jk = jk.split(':')
+
+//                             console.log(h, "string.", 'score', data2.data.regions[0].rows[h].cells[0].text[0], data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', ''), 'team1', lisc[l].team1.replaceAll(' ', ''), 'team2', lisc[l].team2.replaceAll(' ', ''));
+//                             if (data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '') == lisc[l].team1.replaceAll(' ', '') || data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '').includes(lisc[l].team1.replaceAll(' ', '')) || lisc[l].team1.replaceAll(' ', '').includes(data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', ''))) {
+//                                 console.log('t1', parseFloat(jk[0]));
+//                                 if (parseFloat(jk[0]) >= 60) {
+//                                     console.log('t1>60', parseFloat(jk[0]));
+//                                     team1_val[0] += 1
+//                                 }
+//                                 else if (60 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 55) {
+//                                     console.log('t1>55', parseFloat(jk[0]));
+//                                     team1_val[1] += 1
+//                                 }
+
+//                                 else if (55 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 50) {
+//                                     console.log('t1>50', parseFloat(jk[0]));
+//                                     team1_val[2] += 1
+//                                 }
+//                                 else if (50 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 45) {
+//                                     console.log('t1>45', parseFloat(jk[0]));
+//                                     team1_val[3] += 1
+//                                 }
+//                                 else if (45 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 40) {
+//                                     console.log('t1>40', parseFloat(jk[0]));
+//                                     team1_val[4] += 1
+//                                 }
+//                                 else if (40 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 35) {
+//                                     console.log('t1>35', parseFloat(jk[0]));
+//                                     team1_val[5] += 1
+//                                 }
+//                                 else if (35 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 30) {
+//                                     console.log('t1>30', parseFloat(jk[0]));
+//                                     team1_val[6] += 1
+//                                 }
+//                                 else if (30 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 25) {
+//                                     console.log('t1>25', parseFloat(jk[0]));
+//                                     team1_val[7] += 1
+//                                 }
+//                                 else if (25 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 20) {
+//                                     console.log('t1>20', parseFloat(jk[0]));
+//                                     team1_val[8] += 1
+//                                 }
+//                                 else if (20 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 15) {
+//                                     console.log('t1>15', parseFloat(jk[0]));
+//                                     team1_val[9] += 1
+//                                 }
+//                                 else if (15 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 10) {
+//                                     console.log('t1>10', parseFloat(jk[0]));
+//                                     team1_val[10] += 1
+//                                 }
+//                                 else if (10 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 5) {
+//                                     console.log('t1>5', parseFloat(jk[0]));
+//                                     team1_val[11] += 1
+//                                 }
+//                                 else {
+//                                     console.log('t1<5', parseFloat(jk[0]));
+//                                     team1_val[12] += 1
+//                                 }
+
+
+
 
 
-                                }
-                                else if (data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '') == lisc[l].team2.replaceAll(' ', '') || data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '').includes(lisc[l].team2.replaceAll(' ', '')) || lisc[l].team2.replaceAll(' ', '').includes(data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', ''))) {
-                                    console.log('t2', parseFloat(jk[0]));
-                                    if (parseFloat(jk[0]) >= 60) {
-                                        console.log('t2>60', parseFloat(jk[0]));
-                                        team2_val[0] += 1
-
-                                    }
-                                    else if (60 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 55) {
-                                        console.log('t2>55', parseFloat(jk[0]));
-                                        team2_val[1] += 1
-                                    }
-
-                                    else if (55 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 50) {
-                                        console.log('t2>50', parseFloat(jk[0]));
-                                        team2_val[2] += 1
-                                    }
-                                    else if (50 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 45) {
-                                        console.log('t2>45', parseFloat(jk[0]));
-                                        team2_val[3] += 1
-                                    }
-                                    else if (45 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 40) {
-                                        console.log('t2>40', parseFloat(jk[0]));
-                                        team2_val[4] += 1
-                                    }
-                                    else if (40 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 35) {
-                                        console.log('t2>35', parseFloat(jk[0]));
-                                        team2_val[5] += 1
-                                    }
-                                    else if (35 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 30) {
-                                        console.log('t2>30', parseFloat(jk[0]));
-                                        team2_val[6] += 1
-                                    }
-                                    else if (30 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 25) {
-                                        console.log('t2>25', parseFloat(jk[0]));
-                                        team2_val[7] += 1
-                                    }
-                                    else if (25 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 20) {
-                                        console.log('t2>20', parseFloat(jk[0]));
-                                        team2_val[8] += 1
-                                    }
-                                    else if (20 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 15) {
-                                        console.log('t2>15', parseFloat(jk[0]));
-                                        team2_val[9] += 1
-                                    }
-                                    else if (15 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 10) {
-                                        console.log('t2>10', parseFloat(jk[0]));
-                                        team2_val[10] += 1
-                                    }
-                                    else if (10 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 5) {
-                                        console.log('t2>5', parseFloat(jk[0]));
-                                        team2_val[11] += 1
-                                    }
-                                    else {
-                                        console.log('t2<5', parseFloat(jk[0]));
-                                        team2_val[12] += 1
-                                    }
+//                             }
+//                             else if (data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '') == lisc[l].team2.replaceAll(' ', '') || data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '').includes(lisc[l].team2.replaceAll(' ', '')) || lisc[l].team2.replaceAll(' ', '').includes(data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', ''))) {
+//                                 console.log('t2', parseFloat(jk[0]));
+//                                 if (parseFloat(jk[0]) >= 60) {
+//                                     console.log('t2>60', parseFloat(jk[0]));
+//                                     team2_val[0] += 1
+
+//                                 }
+//                                 else if (60 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 55) {
+//                                     console.log('t2>55', parseFloat(jk[0]));
+//                                     team2_val[1] += 1
+//                                 }
+
+//                                 else if (55 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 50) {
+//                                     console.log('t2>50', parseFloat(jk[0]));
+//                                     team2_val[2] += 1
+//                                 }
+//                                 else if (50 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 45) {
+//                                     console.log('t2>45', parseFloat(jk[0]));
+//                                     team2_val[3] += 1
+//                                 }
+//                                 else if (45 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 40) {
+//                                     console.log('t2>40', parseFloat(jk[0]));
+//                                     team2_val[4] += 1
+//                                 }
+//                                 else if (40 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 35) {
+//                                     console.log('t2>35', parseFloat(jk[0]));
+//                                     team2_val[5] += 1
+//                                 }
+//                                 else if (35 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 30) {
+//                                     console.log('t2>30', parseFloat(jk[0]));
+//                                     team2_val[6] += 1
+//                                 }
+//                                 else if (30 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 25) {
+//                                     console.log('t2>25', parseFloat(jk[0]));
+//                                     team2_val[7] += 1
+//                                 }
+//                                 else if (25 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 20) {
+//                                     console.log('t2>20', parseFloat(jk[0]));
+//                                     team2_val[8] += 1
+//                                 }
+//                                 else if (20 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 15) {
+//                                     console.log('t2>15', parseFloat(jk[0]));
+//                                     team2_val[9] += 1
+//                                 }
+//                                 else if (15 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 10) {
+//                                     console.log('t2>10', parseFloat(jk[0]));
+//                                     team2_val[10] += 1
+//                                 }
+//                                 else if (10 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 5) {
+//                                     console.log('t2>5', parseFloat(jk[0]));
+//                                     team2_val[11] += 1
+//                                 }
+//                                 else {
+//                                     console.log('t2<5', parseFloat(jk[0]));
+//                                     team2_val[12] += 1
+//                                 }
 
 
 
-                                }
+//                             }
 
-                            } else {
-                                console.log(h, "not in the string.");
-                            }
+//                         } else {
+//                             console.log(h, "not in the string.");
+//                         }
 
-                        }
+//                     }
 
-                        console.log(team1_val);
-                        console.log(team2_val);
+//                     console.log(team1_val);
+//                     console.log(team2_val);
 
 
-                        const sqlIn = `UPDATE 2021_table SET t1_60 = ${team1_val[0]},t1_55 = ${team1_val[1]},t1_50 = ${team1_val[2]},t1_45 = ${team1_val[3]},t1_40 = ${team1_val[4]},t1_35 = ${team1_val[5]},t1_30 = ${team1_val[6]},t1_25 = ${team1_val[7]},t1_20 = ${team1_val[8]},t1_15 = ${team1_val[9]},t1_10 = ${team1_val[10]},t1_5 = ${team1_val[11]},t1_0 = ${team1_val[12]} WHERE gameid = ${lisc[l].gameid};`
-                        db.query(sqlIn, (err, result) => {
-                            if (err) {
+//                     const sqlIn = `UPDATE 2021_table SET t1_60 = ${team1_val[0]},t1_55 = ${team1_val[1]},t1_50 = ${team1_val[2]},t1_45 = ${team1_val[3]},t1_40 = ${team1_val[4]},t1_35 = ${team1_val[5]},t1_30 = ${team1_val[6]},t1_25 = ${team1_val[7]},t1_20 = ${team1_val[8]},t1_15 = ${team1_val[9]},t1_10 = ${team1_val[10]},t1_5 = ${team1_val[11]},t1_0 = ${team1_val[12]} WHERE gameid = ${lisc[l].gameid};`
+//                     db.query(sqlIn, (err, result) => {
+//                         if (err) {
 
 
-                                console.log('kn');
-                            }
-                            else {
+//                             console.log('kn');
+//                         }
+//                         else {
 
 
-                                console.log('kn32');
+//                             console.log('kn32');
 
-                            }
-                        })
+//                         }
+//                     })
 
-                        const sqlIn2 = `UPDATE 2021_table SET t2_60 = ${team2_val[0]},t2_55 = ${team2_val[1]},t2_50 = ${team2_val[2]},t2_45 = ${team2_val[3]},t2_40 = ${team2_val[4]},t2_35 = ${team2_val[5]},t2_30 = ${team2_val[6]},t2_25 = ${team2_val[7]},t2_20 = ${team2_val[8]},t2_15 = ${team2_val[9]},t2_10 = ${team2_val[10]},t2_5 = ${team2_val[11]},t2_0 = ${team2_val[12]} WHERE gameid = ${lisc[l].gameid};`
-                        db.query(sqlIn2, (err, result) => {
-                            if (err) {
+//                     const sqlIn2 = `UPDATE 2021_table SET t2_60 = ${team2_val[0]},t2_55 = ${team2_val[1]},t2_50 = ${team2_val[2]},t2_45 = ${team2_val[3]},t2_40 = ${team2_val[4]},t2_35 = ${team2_val[5]},t2_30 = ${team2_val[6]},t2_25 = ${team2_val[7]},t2_20 = ${team2_val[8]},t2_15 = ${team2_val[9]},t2_10 = ${team2_val[10]},t2_5 = ${team2_val[11]},t2_0 = ${team2_val[12]} WHERE gameid = ${lisc[l].gameid};`
+//                     db.query(sqlIn2, (err, result) => {
+//                         if (err) {
 
 
-                                console.log('kn');
-                            }
-                            else {
+//                             console.log('kn');
+//                         }
+//                         else {
 
 
-                                console.log('kn32');
+//                             console.log('kn32');
 
-                            }
-                        })
+//                         }
+//                     })
 
-                        team1_val = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-                        team2_val = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+//                     team1_val = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+//                     team2_val = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 
-                    }
+//                 }
 
-                })
-            .catch(error=>{
-                console.log(error);
-            })
+//             })
+//             .catch(error => {
+//                 console.log(error);
+//             })
 
 
 
-        // const sqlIn = `UPDATE 2021_table SET t = ${l},test2 = 'add' WHERE gameid = ${result[l].gameid};`
-        // db.query(sqlIn, [temp], (err, result) => {
-        //     if (err) {
+//         // const sqlIn = `UPDATE 2021_table SET t = ${l},test2 = 'add' WHERE gameid = ${result[l].gameid};`
+//         // db.query(sqlIn, [temp], (err, result) => {
+//         //     if (err) {
 
 
-        //         console.log('kn');
-        //     }
-        //     else {
+//         //         console.log('kn');
+//         //     }
+//         //     else {
 
 
-        //         console.log('kn32');
+//         //         console.log('kn32');
 
-        //     }
-        // })
+//         //     }
+//         // })
 
 
 
 
 
-        // const sqlIn = `UPDATE 2021_table SET test = ${l},test2 = 'add' WHERE gameid = ${result[l].gameid};`
-        // db.query(sqlIn, [temp], (err, result) => {
-        //     if (err) {
+//         // const sqlIn = `UPDATE 2021_table SET test = ${l},test2 = 'add' WHERE gameid = ${result[l].gameid};`
+//         // db.query(sqlIn, [temp], (err, result) => {
+//         //     if (err) {
 
 
-        //         console.log('kn');
-        //     }
-        //     else {
+//         //         console.log('kn');
+//         //     }
+//         //     else {
 
 
-        //         console.log('kn32');
+//         //         console.log('kn32');
 
-        //     }
-        // })
+//         //     }
+//         // })
 
-    }
+//     }
 
-    console.log('END');
-}
+//     console.log('END');
+// }
 
 // async function setValues(valus) {
 //     lisc = valus
@@ -955,36 +1310,36 @@ async function setValues(valus) {
 // fetchData3();
 // fetchData5();
 
-function fetchData5() {
-    let club = []
-    const uu1 = 'https://api-v2.swissunihockey.ch/api/clubs?season=2018'
-    const uu2 = 'https://api-v2.swissunihockey.ch/api/clubs?season=2019'
-    const pik1 = axios.get(uu1)
-    const pik2 = axios.get(uu2)
-    axios.all([pik1, pik2]).then(
-        axios.spread((...allData) => {
-            club = allData[0].data.entries
-            console.log(club[0].set_in_context.club_id);
-            let lic = []
-            let jn = false
-            for (let i = 0; i < 5; i++) {
+// function fetchData5() {
+//     let club = []
+//     const uu1 = 'https://api-v2.swissunihockey.ch/api/clubs?season=2018'
+//     const uu2 = 'https://api-v2.swissunihockey.ch/api/clubs?season=2019'
+//     const pik1 = axios.get(uu1)
+//     const pik2 = axios.get(uu2)
+//     axios.all([pik1, pik2]).then(
+//         axios.spread((...allData) => {
+//             club = allData[0].data.entries
+//             console.log(club[0].set_in_context.club_id);
+//             let lic = []
+//             let jn = false
+//             for (let i = 0; i < 5; i++) {
 
 
-                for (let k = 1; k < 20; k++) {
-                    let uu3 = `https://api-v2.swissunihockey.ch/api/games?mode=club&season=2018&club_id=${club[i].set_in_context.club_id}&page=${k}`
-                    const neb = axios.get(uu3).catch(function (error) {
-                        console.log('error in', i, k);
-                        jn = false
+//                 for (let k = 1; k < 20; k++) {
+//                     let uu3 = `https://api-v2.swissunihockey.ch/api/games?mode=club&season=2018&club_id=${club[i].set_in_context.club_id}&page=${k}`
+//                     const neb = axios.get(uu3).catch(function (error) {
+//                         console.log('error in', i, k);
+//                         jn = false
 
-                    });
+//                     });
 
 
 
-                    console.log(jn);
+//                     console.log(jn);
 
-                    lic.push(neb)
+//                     lic.push(neb)
 
-                }
+//                 }
 
 
 
@@ -994,10 +1349,10 @@ function fetchData5() {
 
 
 
-            }
+//             }
 
-            axios.all(lic).then(
-                axios.spread((...allData2) => {
+//             axios.all(lic).then(
+//                 axios.spread((...allData2) => {
 
 
 
@@ -1006,44 +1361,44 @@ function fetchData5() {
 
 
 
-                    for (let j = 0; j < allData2.length; j++) {
-                        try {
-                            datt = allData2.data.regions[0].rows;
-                            temp.push(parseInt(datt[j].link.ids[0]));
-                            temp.push(datt[j].cells[0].text[0]);
-                            temp.push(datt[j].cells[2].text[0]);
-                            temp.push(datt[j].cells[3].text[0]);
-                            temp.push(datt[j].cells[4].text[0]);
-                            temp.push(datt[j].cells[5].text[0]);
+//                     for (let j = 0; j < allData2.length; j++) {
+//                         try {
+//                             datt = allData2.data.regions[0].rows;
+//                             temp.push(parseInt(datt[j].link.ids[0]));
+//                             temp.push(datt[j].cells[0].text[0]);
+//                             temp.push(datt[j].cells[2].text[0]);
+//                             temp.push(datt[j].cells[3].text[0]);
+//                             temp.push(datt[j].cells[4].text[0]);
+//                             temp.push(datt[j].cells[5].text[0]);
 
-                            temp.push('2018')
+//                             temp.push('2018')
 
-                            dat_finale.push(temp)
+//                             dat_finale.push(temp)
 
-                            const sqlIn = `INSERT INTO 2018_table (gameid,date,league,team1,team2,results,season) VALUES (?)`
-                            db.query(sqlIn, [temp], (err, result) => {
-                                if (err) {
+//                             const sqlIn = `INSERT INTO 2018_table (gameid,date,league,team1,team2,results,season) VALUES (?)`
+//                             db.query(sqlIn, [temp], (err, result) => {
+//                                 if (err) {
 
 
-                                    console.log('kn');
-                                }
-                                else {
+//                                     console.log('kn');
+//                                 }
+//                                 else {
 
 
-                                    console.log('kn32');
+//                                     console.log('kn32');
 
-                                }
-                            })
+//                                 }
+//                             })
 
 
 
-                            temp = []
+//                             temp = []
 
-                        } catch (error) {
-                            console.log('err',)
-                        }
+//                         } catch (error) {
+//                             console.log('err',)
+//                         }
 
-                    }
+//                     }
 
 
 
@@ -1055,142 +1410,142 @@ function fetchData5() {
 
 
 
-                })
-            )
+//                 })
+//             )
 
 
-        })
-    )
+//         })
+//     )
 
 
 
-}
+// }
 
-async function fetchData3() {
+// async function fetchData3() {
 
 
-    const response = await fetch(
-        `https://api-v2.swissunihockey.ch/api/clubs?season=2018`
+//     const response = await fetch(
+//         `https://api-v2.swissunihockey.ch/api/clubs?season=2018`
 
-    );
-    const data2 = await response.json();
-    club = data2.entries
-    console.log(club.length);
+//     );
+//     const data2 = await response.json();
+//     club = data2.entries
+//     console.log(club.length);
 
 
 
-    for (let i = 0; i < club.length; i++) {
+//     for (let i = 0; i < club.length; i++) {
 
-        console.log(i);
-        k = 0
+//         console.log(i);
+//         k = 0
 
-        while (1) {
-            k++
+//         while (1) {
+//             k++
 
-            console.log('set ', i, 'page ', k);
-            try {
-                const response2 = await fetch(
-                    `https://api-v2.swissunihockey.ch/api/games?mode=club&season=2018&club_id=${club[i].set_in_context.club_id}&page=${k}`
+//             console.log('set ', i, 'page ', k);
+//             try {
+//                 const response2 = await fetch(
+//                     `https://api-v2.swissunihockey.ch/api/games?mode=club&season=2018&club_id=${club[i].set_in_context.club_id}&page=${k}`
 
-                );
-                const data3 = await response2.json();
+//                 );
+//                 const data3 = await response2.json();
 
 
 
-                if (data3.status == 'An error has occurred.') {
-                    break
+//                 if (data3.status == 'An error has occurred.') {
+//                     break
 
-                }
-                else {
+//                 }
+//                 else {
 
-                    console.log('end ,', i);
+//                     console.log('end ,', i);
 
-                }
-                datt = data3.data.regions[0].rows;
-                for (let j = 0; j < datt.length; j++) {
-                    temp.push(parseInt(datt[j].link.ids[0]));
-                    temp.push(datt[j].cells[0].text[0]);
-                    temp.push(datt[j].cells[2].text[0]);
-                    temp.push(datt[j].cells[3].text[0]);
-                    temp.push(datt[j].cells[4].text[0]);
-                    temp.push(datt[j].cells[5].text[0]);
+//                 }
+//                 datt = data3.data.regions[0].rows;
+//                 for (let j = 0; j < datt.length; j++) {
+//                     temp.push(parseInt(datt[j].link.ids[0]));
+//                     temp.push(datt[j].cells[0].text[0]);
+//                     temp.push(datt[j].cells[2].text[0]);
+//                     temp.push(datt[j].cells[3].text[0]);
+//                     temp.push(datt[j].cells[4].text[0]);
+//                     temp.push(datt[j].cells[5].text[0]);
 
-                    temp.push('2018')
+//                     temp.push('2018')
 
-                    dat_finale.push(temp)
+//                     dat_finale.push(temp)
 
-                    const sqlIn = `INSERT INTO 2022_table (gameid,date,league,team1,team2,results,season) VALUES (?)`
-                    db.query(sqlIn, [temp], (err, result) => {
-                        if (err) {
+//                     const sqlIn = `INSERT INTO 2022_table (gameid,date,league,team1,team2,results,season) VALUES (?)`
+//                     db.query(sqlIn, [temp], (err, result) => {
+//                         if (err) {
 
 
-                            console.log('kn');
-                        }
-                        else {
+//                             console.log('kn');
+//                         }
+//                         else {
 
 
-                            console.log('kn32');
+//                             console.log('kn32');
 
-                        }
-                    })
+//                         }
+//                     })
 
 
 
-                    temp = []
+//                     temp = []
 
 
 
-                }
+//                 }
 
 
-            } catch (error) {
+//             } catch (error) {
 
-            }
+//             }
 
-        }
+//         }
 
 
 
 
-    }
+//     }
 
-    // const sqlIn = `INSERT INTO new_table2 (date,league,team1,team2,results,gameid,season) VALUES (${dat_finale.map(kmn2 => ('(' + "'" + kmn2[0] + "'" + ',' + "'" + kmn2[1] + "'" + ',' + "'" + kmn2[2] + "'" + ',' + "'" + kmn2[3] + "'" + ',' + "'" + kmn2[4] + "'" + ',' + "'" + kmn2[5] + "'" + ',' + "'" + kmn2[6] + "'" + ')'))})`;
-    // db.query(sqlIn, (err, result) => {
-    //     if (err) {
-    //         console.log(err)
+//     // const sqlIn = `INSERT INTO new_table2 (date,league,team1,team2,results,gameid,season) VALUES (${dat_finale.map(kmn2 => ('(' + "'" + kmn2[0] + "'" + ',' + "'" + kmn2[1] + "'" + ',' + "'" + kmn2[2] + "'" + ',' + "'" + kmn2[3] + "'" + ',' + "'" + kmn2[4] + "'" + ',' + "'" + kmn2[5] + "'" + ',' + "'" + kmn2[6] + "'" + ')'))})`;
+//     // db.query(sqlIn, (err, result) => {
+//     //     if (err) {
+//     //         console.log(err)
 
-    //         console.log('kn');
-    //     }
-    //     else {
-    //         console.log(result);
+//     //         console.log('kn');
+//     //     }
+//     //     else {
+//     //         console.log(result);
 
-    //         console.log('kn32');
+//     //         console.log('kn32');
 
-    //     }
-    // })
+//     //     }
+//     // })
 
 
-    // fetch('https://api-v2.swissunihockey.ch/api/teams?league=1&game_class=21')
-    //   .then(response => response.json())
-    //   .then(data2 => {
-    //     console.log('clubs', data2);
-    //     console.log('knkn', data2.data.regions[0].rows);
-    //     setTeam(data2.data.regions[0].rows)
-    //   })
+//     // fetch('https://api-v2.swissunihockey.ch/api/teams?league=1&game_class=21')
+//     //   .then(response => response.json())
+//     //   .then(data2 => {
+//     //     console.log('clubs', data2);
+//     //     console.log('knkn', data2.data.regions[0].rows);
+//     //     setTeam(data2.data.regions[0].rows)
+//     //   })
 
-}
+// }
 
-function fetchData1() {
-    fetch('https://api-v2.swissunihockey.ch/api/seasons')
-        .then(response => response.json())
-        .then(data2 => {
+// function fetchData1() {
+//     fetch('https://api-v2.swissunihockey.ch/api/seasons')
+//         .then(response => response.json())
+//         .then(data2 => {
 
-            datt = data2.entries
-            console.log(datt);
+//             datt = data2.entries
+//             console.log(datt);
 
-        })
+//         })
 
-}
+// }
 
 
 //data2.entries.map(kmn2 => ())
