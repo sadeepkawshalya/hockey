@@ -19,21 +19,21 @@ const cors = require("cors")
 
 // });
 
-const db = mysql.createPool({
-    host: "awsdatabase.cf4ufppnbflh.ap-south-1.rds.amazonaws.com",
-    user: "admin",
-    password: "Pioneer072",
-    database: "sys",
-
-});
-
 // const db = mysql.createPool({
-//     host: "162.214.155.142",
-//     user: "nizayosl_kawsad",
+//     host: "awsdatabase.cf4ufppnbflh.ap-south-1.rds.amazonaws.com",
+//     user: "admin",
 //     password: "Pioneer072",
-//     database: "nizayosl_new_table",
+//     database: "sys",
 
 // });
+
+const db = mysql.createPool({
+    host: "162.214.155.142",
+    user: "nizayosl_kawsad",
+    password: "Pioneer072",
+    database: "nizayosl_new_table",
+
+});
 
 let PORT = process.env.PORT || 3001;
 
@@ -169,7 +169,7 @@ async function create_tables() {
                 for (let h = 0; h < data2.entries.length; h++) {
                     console.log(data2.entries[h].set_in_context.season);
                     let se = data2.entries[h].set_in_context.season
-                    const cr = `CREATE TABLE ${se}_table (gameid INT NOT NULL,date TEXT(255) NULL,league TEXT(255) NULL,team1 TEXT(255) NULL,team2 TEXT(255) NULL,results TEXT(255) NULL,season TEXT(255) NULL,t1_0 TEXT(255) NULL, t1_5 TEXT(255) NULL,t1_10 TEXT(255) NULL,t1_15 TEXT(255) NULL,t1_20 TEXT(255) NULL,t1_25 TEXT(255) NULL,t1_30 TEXT(255) NULL,t1_35 TEXT(255) NULL,t1_40 TEXT(255) NULL,t1_45 TEXT(255) NULL,t1_50 TEXT(255) NULL,t1_55 TEXT(255) NULL,t1_60 TEXT(255) NULL,t2_0 TEXT(255) NULL,t2_5 TEXT(255) NULL,t2_10 TEXT(255) NULL,t2_15 TEXT(255) NULL,t2_20 TEXT(255) NULL,t2_25 TEXT(255) NULL,t2_30 TEXT(255) NULL,t2_35 TEXT(255) NULL,t2_40 TEXT(255) NULL,t2_45 TEXT(255) NULL,t2_50 TEXT(255) NULL,t2_55 TEXT(255) NULL,t2_60 TEXT(255) NULL,PRIMARY KEY (gameid), UNIQUE INDEX id${se}_table_UNIQUE (gameid ASC) VISIBLE);`
+                    const cr = `CREATE TABLE ${se}_table (gameid INT NOT NULL,date TEXT(255) NULL,league TEXT(255) NULL,team1 TEXT(255) NULL,team2 TEXT(255) NULL,results TEXT(255) NULL,season TEXT(255) NULL,t1_0 TEXT(255) NULL, t1_5 TEXT(255) NULL,t1_10 TEXT(255) NULL,t1_15 TEXT(255) NULL,t1_20 TEXT(255) NULL,t1_25 TEXT(255) NULL,t1_30 TEXT(255) NULL,t1_35 TEXT(255) NULL,t1_40 TEXT(255) NULL,t1_45 TEXT(255) NULL,t1_50 TEXT(255) NULL,t1_55 TEXT(255) NULL,t1_60 TEXT(255) NULL,t2_0 TEXT(255) NULL,t2_5 TEXT(255) NULL,t2_10 TEXT(255) NULL,t2_15 TEXT(255) NULL,t2_20 TEXT(255) NULL,t2_25 TEXT(255) NULL,t2_30 TEXT(255) NULL,t2_35 TEXT(255) NULL,t2_40 TEXT(255) NULL,t2_45 TEXT(255) NULL,t2_50 TEXT(255) NULL,t2_55 TEXT(255) NULL,t2_60 TEXT(255) NULL,PRIMARY KEY (gameid), UNIQUE INDEX id${se}_table_UNIQUE (gameid ASC));`
 
                     db.query(cr, (err, result) => {
                         if (err) {
@@ -210,7 +210,7 @@ async function add_new_data() {
     sesc = data2.entries
     console.log(sesc);
 
-    for (let b = 2; b < 4; b++) {
+    for (let b = 1; b < 2; b++) {
 
         let se = sesc[b].set_in_context.season
         const response = await fetch(
@@ -223,7 +223,7 @@ async function add_new_data() {
 
 
 
-        for (let i = 0; i < club.length; i++) {
+        for (let i = 0; i < 1; i++) {
 
             console.log(i);
             k = 0
