@@ -210,7 +210,7 @@ async function add_new_data() {
     sesc = data2.entries
     console.log(sesc);
 
-    for (let b = 1; b < 2; b++) {
+    for (let b = 0; b < club.length; b++) {
 
         let se = sesc[b].set_in_context.season
         const response = await fetch(
@@ -223,11 +223,9 @@ async function add_new_data() {
 
 
 
-<<<<<<< HEAD
         for (let i = 0; i < 1; i++) {
-=======
+
         for (let i = 0; i < club.length; i++) {
->>>>>>> 3e63bbc (make it better)
 
             console.log(i);
             k = 0
@@ -1611,4 +1609,4 @@ let k = 0
 
 app.listen(PORT, () => {
     console.log('running on port 3001');
-})
+})}
