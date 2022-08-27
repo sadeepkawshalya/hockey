@@ -223,7 +223,11 @@ async function add_new_data() {
 
 
 
+<<<<<<< HEAD
         for (let i = 0; i < 1; i++) {
+=======
+        for (let i = 0; i < club.length; i++) {
+>>>>>>> 3e63bbc (make it better)
 
             console.log(i);
             k = 0
