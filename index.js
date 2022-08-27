@@ -210,7 +210,7 @@ async function add_new_data() {
     sesc = data2.entries
     console.log(sesc);
 
-    for (let b = 2; b < 3; b++) {
+    for (let b = 1; b < 2; b++) {
 
         let se = sesc[b].set_in_context.season
         const response = await fetch(
@@ -225,7 +225,7 @@ async function add_new_data() {
 
         for (let i = 0; i < club.length; i++) {
 
-            console.log(i);z
+            console.log(i);
             k = 0
 
             while (1) {
