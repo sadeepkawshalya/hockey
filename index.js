@@ -286,8 +286,8 @@ async function add_new_data() {
                             .then(data2 => {
                                 
                                 console.log('hjavsd',data2);
-                                let team1_val = [['7'], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
-                                let team2_val = [['7'], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
+                                let team1_val = [[''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
+                                let team2_val = [[''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
                                
 
                                 if (data2.data.regions[0].rows.length == 0) {
@@ -324,7 +324,7 @@ async function add_new_data() {
 
                                         }
                                     })
-                                            if (data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '') == datt[j].cells[3].text[0].replaceAll(' ', '') || data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '').includes(datt[j].cells[3].text[0].replaceAll(' ', '')) || datt[j].cells[3].text[0].replaceAll(' ', '').includes(data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', ''))) {
+                                            if (data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, '') == datt[j].cells[3].text[0].replace(/ /g, '') || data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, '').includes(datt[j].cells[3].text[0].replace(/ /g, '')) || datt[j].cells[3].text[0].replace(/ /g, '').includes(data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, ''))) {
                                                 console.log('t1', parseFloat(jk[0]));
                                                 
                                                 if (parseFloat(jk[0]) >= 60) {
@@ -390,7 +390,7 @@ async function add_new_data() {
 
 
                                             }
-                                            else if (data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '') == datt[j].cells[4].text[0].replaceAll(' ', '') || data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', '').includes(datt[j].cells[4].text[0].replaceAll(' ', '')) || datt[j].cells[4].text[0].replaceAll(' ', '').includes(data2.data.regions[0].rows[h].cells[2].text[0].replaceAll(' ', ''))) {
+                                            else if (data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, '') == datt[j].cells[4].text[0].replace(/ /g, '') || data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, '').includes(datt[j].cells[4].text[0].replace(/ /g, '')) || datt[j].cells[4].text[0].replace(/ /g, '').includes(data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, ''))) {
                                                 console.log('t2', parseFloat(jk[0]));
                                                 if (parseFloat(jk[0]) >= 60) {
                                                     console.log('t2>60', parseFloat(jk[0]));
