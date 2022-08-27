@@ -35,7 +35,7 @@ const db = mysql.createPool({
 
 });
 
-let PORT = process.env.PORT || 3001;
+let PORTa = process.env.PORT || 3001;
 
 
 app.use(cors());
@@ -1607,6 +1607,6 @@ let k = 0
 
 
 
-app.listen(PORT, () => {
+app.listen(PORTa, () => {
     console.log('running on port 3001');
 })}
