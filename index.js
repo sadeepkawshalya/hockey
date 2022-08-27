@@ -286,12 +286,18 @@ async function add_new_data() {
                             .then(data2 => {
                                 
                                 console.log('hjavsd',data2);
-                                let team1_val = [['3'], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
-                                let team2_val = [['3'], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
-                                const sqlIn = `UPDATE ${se}_table SET t1_60 = "${team1_val[0][0]}",t1_55 = "${team1_val[1][0]}",t1_50 = "${team1_val[2][0]}",t1_45 = "${team1_val[3][0]}",
+                                let team1_val = [['8'], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
+                                let team2_val = [['8'], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
+                               
+
+                                if (data2.data.regions[0].rows.length == 0) {
+                                    console.log('no');
+                                }
+                                else {
+                                    const sqlIn5 = `UPDATE ${se}_table SET t1_60 = "${team1_val[0][0]}",t1_55 = "${team1_val[1][0]}",t1_50 = "${team1_val[2][0]}",t1_45 = "${team1_val[3][0]}",
                                     t1_40 = "${team1_val[4][0]}",t1_35 = "${team1_val[5][0]}",t1_30 = "${team1_val[6][0]}",t1_25 = "${team1_val[7][0]}",t1_20 = "${team1_val[8][0]}",
                                     t1_15 = "${team1_val[9][0]}",t1_10 = "${team1_val[10][0]}",t1_5 = "${team1_val[11][0]}",t1_0 = "${team1_val[12][0]}" WHERE gameid = ${parseInt(datt[j].link.ids[0])};`
-                                    db.query(sqlIn, (err, result) => {
+                                    db.query(sqlIn5, (err, result) => {
                                         if (err) {
 
 
@@ -304,11 +310,6 @@ async function add_new_data() {
 
                                         }
                                     })
-
-                                if (data2.data.regions[0].rows.length == 0) {
-                                    console.log('no');
-                                }
-                                else {
                                     for (let h = 0; h < data2.data.regions[0].rows.length; h++) {
                                         console.log('lets');
 
