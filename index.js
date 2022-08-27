@@ -35,7 +35,7 @@ const db = mysql.createPool({
 
 });
 
-let PORTa = process.env.PORT || 3001;
+let PORT = process.env.PORT || 3001;
 
 
 app.use(cors());
@@ -144,7 +144,7 @@ app.get("/api/get", (req, res) => {
         }
 
         if (q[0] == 'test') {
-            res.send('result234')
+            res.send('result23')
             
 
         }
@@ -210,7 +210,7 @@ async function add_new_data() {
     sesc = data2.entries
     console.log(sesc);
 
-    for (let b = 0; b < club.length; b++) {
+    for (let b = 2; b < 3; b++) {
 
         let se = sesc[b].set_in_context.season
         const response = await fetch(
@@ -223,11 +223,9 @@ async function add_new_data() {
 
 
 
-        for (let i = 0; i < 1; i++) {
-
         for (let i = 0; i < club.length; i++) {
 
-            console.log(i);
+            console.log(i);z
             k = 0
 
             while (1) {
@@ -1607,6 +1605,6 @@ let k = 0
 
 
 
-app.listen(PORTa, () => {
+app.listen(PORT, () => {
     console.log('running on port 3001');
-})}
+})
