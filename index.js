@@ -144,7 +144,7 @@ app.get("/api/get", (req, res) => {
         }
 
         if (q[0] == 'test') {
-            res.send('result23')
+            res.send('result234')
             
 
         }
@@ -210,7 +210,7 @@ async function add_new_data() {
     sesc = data2.entries
     console.log(sesc);
 
-    for (let b = 1; b < 2; b++) {
+    for (let b = 2; b < 3; b++) {
 
         let se = sesc[b].set_in_context.season
         const response = await fetch(
