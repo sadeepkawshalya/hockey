@@ -223,7 +223,7 @@ async function add_new_data() {
 
 
 
-        for (let i = 0; i < club.length; i++) {
+        for (let i = 0; i < 1; i++) {
 
             console.log(i);
             k = 0
