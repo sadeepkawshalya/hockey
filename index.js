@@ -210,7 +210,7 @@ async function add_new_data() {
     sesc = data2.entries
     console.log(sesc);
 
-    for (let b = 2; b < sesc.length; b++) {
+    for (let b = 4; b < 5; b++) {
 
         let se = sesc[b].set_in_context.season
         const response = await fetch(
@@ -230,7 +230,9 @@ async function add_new_data() {
 
             while (1) {
                 k++
-
+                if(k>500){
+                    break
+                }
 
                 try {
                     const response2 = await fetch(
