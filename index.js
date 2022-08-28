@@ -43,112 +43,117 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/api/get", (req, res) => {
-    const sqlGet = "SELECT * FROM 2022_table";
-    let ful = req._parsedUrl.query.split('&');
-    let q = '';
-    console.log(ful);
-    for (let n = 0; n < ful.length; n++) {
-
-        q = ful[n].split('=');
-        console.log(q)
-
-        if (q[0] == 'aleague' && ful[n + 1].split('=')[0] == 'aseason' && ful[n + 2].split('=')[0] == 'ateam') {
-            console.log('yes', ful[n + 1].split('=')[1], decodeURI(ful[n + 2].split('=')[1]), decodeURI(q[1]));
-
-
-            const sl = `SELECT * FROM ${ful[n + 1].split('=')[1]}_table WHERE league = '${decodeURI(q[1])}' AND (team2 = '${decodeURI(ful[n + 2].split('=')[1])}' OR team1 = '${decodeURI(ful[n + 2].split('=')[1])}');`
-            db.query(sl, (error, result) => {
-
-
-                res.send(result)
-
-
-            })
-
-
-        }
-
-
-        if (q[0] == 'team') {
-            const sl = `SELECT * FROM 2022_table WHERE team2 = '${decodeURI(q[1])}' OR team1 = '${decodeURI(q[1])}';`
-            db.query(sl, (error, result) => {
-
-
-                res.send(result)
-
-
-            })
-
-        }
-
-        if (q[0] == 'season') {
-            console.log('season is ', q[1]);
-            h = ful[n + 1].split('=');
-            console.log('h', h)
-            if (h[0] == 'league') {
-                let k1 = []
-                let ob = []
-                const sl = `SELECT DISTINCT gameid,team1 FROM ${q[1]}_table WHERE league = '${decodeURI(h[1])}';`
-                for (let index = 0; index < decodeURI(h[1]).length; index++) {
-                    ob.push(decodeURI(h[1]).charCodeAt(index))
-
-                }
-                console.log('char inex', decodeURI(h[1]), ob);
+    try {
+        let ful = req._parsedUrl.query.split('&');
+        let q = '';
+        console.log(ful);
+        for (let n = 0; n < ful.length; n++) {
+    
+            q = ful[n].split('=');
+            console.log(q)
+    
+            if (q[0] == 'aleague' && ful[n + 1].split('=')[0] == 'aseason' && ful[n + 2].split('=')[0] == 'ateam') {
+                console.log('yes', ful[n + 1].split('=')[1], decodeURI(ful[n + 2].split('=')[1]), decodeURI(q[1]));
+    
+    
+                const sl = `SELECT * FROM ${ful[n + 1].split('=')[1]}_table WHERE league = '${decodeURI(q[1])}' AND (team2 = '${decodeURI(ful[n + 2].split('=')[1])}' OR team1 = '${decodeURI(ful[n + 2].split('=')[1])}');`
                 db.query(sl, (error, result) => {
-
-                    console.log(result);
-
-                    for (let o = 0; o < result.length; o++) {
-                        k1.push(result[o].team1)
-
-                    }
-
-
-
-
+    
+    
+                    res.send(result)
+    
+    
                 })
-
-                const s2 = `SELECT DISTINCT gameid,team2 FROM ${q[1]}_table WHERE league = '${decodeURI(h[1])}';`
-                db.query(s2, (error, result2) => {
-
-                    console.log(result2);
-                    for (let index = 0; index < result2.length; index++) {
-                        k1.push(result2[index].team2)
-
-                    }
-
-                    k1 = [...new Set(k1)];
-
-
-
-                    res.send(k1)
-
-
-                })
-
-
+    
+    
             }
-
+    
+    
+            if (q[0] == 'team') {
+                const sl = `SELECT * FROM 2022_table WHERE team2 = '${decodeURI(q[1])}' OR team1 = '${decodeURI(q[1])}';`
+                db.query(sl, (error, result) => {
+    
+    
+                    res.send(result)
+    
+    
+                })
+    
+            }
+    
+            if (q[0] == 'season') {
+                console.log('season is ', q[1]);
+                h = ful[n + 1].split('=');
+                console.log('h', h)
+                if (h[0] == 'league') {
+                    let k1 = []
+                    let ob = []
+                    const sl = `SELECT DISTINCT gameid,team1 FROM ${q[1]}_table WHERE league = '${decodeURI(h[1])}';`
+                    for (let index = 0; index < decodeURI(h[1]).length; index++) {
+                        ob.push(decodeURI(h[1]).charCodeAt(index))
+    
+                    }
+                    console.log('char inex', decodeURI(h[1]), ob);
+                    db.query(sl, (error, result) => {
+    
+                        console.log(result);
+    
+                        for (let o = 0; o < result.length; o++) {
+                            k1.push(result[o].team1)
+    
+                        }
+    
+    
+    
+    
+                    })
+    
+                    const s2 = `SELECT DISTINCT gameid,team2 FROM ${q[1]}_table WHERE league = '${decodeURI(h[1])}';`
+                    db.query(s2, (error, result2) => {
+    
+                        console.log(result2);
+                        for (let index = 0; index < result2.length; index++) {
+                            k1.push(result2[index].team2)
+    
+                        }
+    
+                        k1 = [...new Set(k1)];
+    
+    
+    
+                        res.send(k1)
+    
+    
+                    })
+    
+    
+                }
+    
+            }
+    
+            if (q[0] == 'league_list') {
+                const sl = `SELECT DISTINCT league FROM ${q[1]}_table;`
+                db.query(sl, (error, result) => {
+    
+                    console.log(result);
+                    res.send(result)
+    
+    
+                })
+    
+            }
+    
+            if (q[0] == 'test') {
+                res.send('result236220')
+    
+    
+            }
         }
-
-        if (q[0] == 'league_list') {
-            const sl = `SELECT DISTINCT league FROM ${q[1]}_table;`
-            db.query(sl, (error, result) => {
-
-                console.log(result);
-                res.send(result)
-
-
-            })
-
-        }
-
-        if (q[0] == 'test') {
-            res.send('result236220')
-
-
-        }
+        
+    } catch (error) {
+        
     }
+
 
 
 
