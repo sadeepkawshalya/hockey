@@ -48,39 +48,39 @@ app.get("/api/get", (req, res) => {
         let q = '';
         console.log(ful);
         for (let n = 0; n < ful.length; n++) {
-    
+
             q = ful[n].split('=');
             console.log(q)
-    
+
             if (q[0] == 'aleague' && ful[n + 1].split('=')[0] == 'aseason' && ful[n + 2].split('=')[0] == 'ateam') {
                 console.log('yes', ful[n + 1].split('=')[1], decodeURI(ful[n + 2].split('=')[1]), decodeURI(q[1]));
-    
-    
+
+
                 const sl = `SELECT * FROM ${ful[n + 1].split('=')[1]}_table WHERE league = '${decodeURI(q[1])}' AND (team2 = '${decodeURI(ful[n + 2].split('=')[1])}' OR team1 = '${decodeURI(ful[n + 2].split('=')[1])}');`
                 db.query(sl, (error, result) => {
-    
-    
+
+
                     res.send(result)
-    
-    
+
+
                 })
-    
-    
+
+
             }
-    
-    
+
+
             if (q[0] == 'team') {
                 const sl = `SELECT * FROM 2022_table WHERE team2 = '${decodeURI(q[1])}' OR team1 = '${decodeURI(q[1])}';`
                 db.query(sl, (error, result) => {
-    
-    
+
+
                     res.send(result)
-    
-    
+
+
                 })
-    
+
             }
-    
+
             if (q[0] == 'season') {
                 console.log('season is ', q[1]);
                 h = ful[n + 1].split('=');
@@ -91,67 +91,67 @@ app.get("/api/get", (req, res) => {
                     const sl = `SELECT DISTINCT gameid,team1 FROM ${q[1]}_table WHERE league = '${decodeURI(h[1])}';`
                     for (let index = 0; index < decodeURI(h[1]).length; index++) {
                         ob.push(decodeURI(h[1]).charCodeAt(index))
-    
+
                     }
                     console.log('char inex', decodeURI(h[1]), ob);
                     db.query(sl, (error, result) => {
-    
+
                         console.log(result);
-    
+
                         for (let o = 0; o < result.length; o++) {
                             k1.push(result[o].team1)
-    
+
                         }
-    
-    
-    
-    
+
+
+
+
                     })
-    
+
                     const s2 = `SELECT DISTINCT gameid,team2 FROM ${q[1]}_table WHERE league = '${decodeURI(h[1])}';`
                     db.query(s2, (error, result2) => {
-    
+
                         console.log(result2);
                         for (let index = 0; index < result2.length; index++) {
                             k1.push(result2[index].team2)
-    
+
                         }
-    
+
                         k1 = [...new Set(k1)];
-    
-    
-    
+
+
+
                         res.send(k1)
-    
-    
+
+
                     })
-    
-    
+
+
                 }
-    
+
             }
-    
+
             if (q[0] == 'league_list') {
                 const sl = `SELECT DISTINCT league FROM ${q[1]}_table;`
                 db.query(sl, (error, result) => {
-    
+
                     console.log(result);
                     res.send(result)
-    
-    
+
+
                 })
-    
+
             }
-    
+
             if (q[0] == 'test') {
-                res.send('result')
-    
-    
+                res.send('result20')
+
+
             }
         }
-        
+
     } catch (error) {
-        
+
     }
 
 
@@ -161,7 +161,7 @@ app.get("/api/get", (req, res) => {
 
 })
 
-create_tables();
+// create_tables();
 
 async function create_tables() {
     try {
@@ -235,7 +235,7 @@ async function add_new_data() {
 
             while (1) {
                 k++
-                if(k>500){
+                if (k > 500) {
                     break
                 }
 
@@ -291,49 +291,49 @@ async function add_new_data() {
                         await fetch(`https://api-v2.swissunihockey.ch/api/game_events/${parseInt(datt[j].link.ids[0])}`)
                             .then(response => response.json())
                             .then(data2 => {
-                                
-                                console.log('hjavsd',data2);
+
+                                console.log('hjavsd', data2);
                                 let team1_val = [[''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
                                 let team2_val = [[''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], [''], ['']]
-                               
+
 
                                 if (data2.data.regions[0].rows.length == 0) {
                                     console.log('no');
                                 }
                                 else {
-                                    
+
                                     for (let h = 0; h < data2.data.regions[0].rows.length; h++) {
                                         console.log('lets');
 
-                                        
+
                                         if (parseInt(datt[j].link.ids[0]), data2.data.regions[0].rows[h].cells[1].text[0].includes('Torschütze')) {
-                                            
+
                                             let jk = data2.data.regions[0].rows[h].cells[0].text[0]
-                                            
+
 
                                             jk = jk.split(':')
-                                            
 
-                                            console.log(h, "string.", 'score', data2.data.regions[0].rows[h].cells[0].text[0],data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, ''));
+
+                                            console.log(h, "string.", 'score', data2.data.regions[0].rows[h].cells[0].text[0], data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, ''));
                                             const sqlIn5 = `UPDATE ${se}_table SET t1_60 = "${team1_val[0][0]}",t1_55 = "${team1_val[1][0]}",t1_50 = "${team1_val[2][0]}",t1_45 = "${team1_val[3][0]}",
-                                    t1_40 = "${team1_val[4][0]}",t1_35 = "${team1_val[5][0]}",t1_30 = "${team1_val[6][0]}",t1_25 = "${team1_val[7][0]}",t1_20 = "${team1_val[8][0]}",
-                                    t1_15 = "${team1_val[9][0]}",t1_10 = "${team1_val[10][0]}",t1_5 = "${team1_val[11][0]}",t1_0 = "${team1_val[12][0]}" WHERE gameid = ${parseInt(datt[j].link.ids[0])};`
-                                    db.query(sqlIn5, (err, result) => {
-                                        if (err) {
+                                     t1_40 = "${team1_val[4][0]}",t1_35 = "${team1_val[5][0]}",t1_30 = "${team1_val[6][0]}",t1_25 = "${team1_val[7][0]}",t1_20 = "${team1_val[8][0]}",
+                                     t1_15 = "${team1_val[9][0]}",t1_10 = "${team1_val[10][0]}",t1_5 = "${team1_val[11][0]}",t1_0 = "${team1_val[12][0]}" WHERE gameid = ${parseInt(datt[j].link.ids[0])};`
+                                            db.query(sqlIn5, (err, result) => {
+                                                if (err) {
 
 
-                                            console.log('kn', err);
-                                        }
-                                        else {
+                                                    console.log('kn', err);
+                                                }
+                                                else {
 
 
-                                            console.log('kn32');
+                                                    console.log('kn32');
 
-                                        }
-                                    })
+                                                }
+                                            })
                                             if (data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, '') == datt[j].cells[3].text[0].replace(/ /g, '') || data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, '').includes(datt[j].cells[3].text[0].replace(/ /g, '')) || datt[j].cells[3].text[0].replace(/ /g, '').includes(data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, ''))) {
                                                 console.log('t1', parseFloat(jk[0]));
-                                                
+
                                                 if (parseFloat(jk[0]) >= 60) {
                                                     console.log('t1>60', parseFloat(jk[0]));
                                                     team1_val[0] = [team1_val[0] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
