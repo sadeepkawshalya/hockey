@@ -144,7 +144,7 @@ app.get("/api/get", (req, res) => {
             }
     
             if (q[0] == 'test') {
-                res.send('result236220')
+                res.send('result')
     
     
             }
