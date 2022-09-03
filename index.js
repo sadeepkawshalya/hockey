@@ -216,7 +216,7 @@ async function add_new_data() {
     sesc = data2.entries
     console.log(sesc);
 
-    for (let b = 3; b < 4; b++) {
+    for (let b = 4; b < 5; b++) {
 
         let se = sesc[b].set_in_context.season
         const response = await fetch(
