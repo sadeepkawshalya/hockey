@@ -162,7 +162,7 @@ app.get("/api/get", (req, res) => {
 
 })
 
-// create_tables();
+create_tables();
 
 async function create_tables() {
     try {
@@ -202,7 +202,7 @@ async function create_tables() {
 
 }
 
-// add_new_data();
+add_new_data();
 
 async function add_new_data() {
 
@@ -216,7 +216,7 @@ async function add_new_data() {
     sesc = data2.entries
     console.log(sesc);
 
-    for (let b = 5; b < 6; b++) {
+    for (let b = 1; b < 2; b++) {
 
         let se = sesc[b].set_in_context.season
         const response = await fetch(
@@ -316,79 +316,64 @@ async function add_new_data() {
 
 
                                             console.log(h, "string.", 'score', data2.data.regions[0].rows[h].cells[0].text[0], data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, ''));
-                                            const sqlIn5 = `UPDATE ${se}_table SET t1_60 = "${team1_val[0][0]}",t1_55 = "${team1_val[1][0]}",t1_50 = "${team1_val[2][0]}",t1_45 = "${team1_val[3][0]}",
-                                     t1_40 = "${team1_val[4][0]}",t1_35 = "${team1_val[5][0]}",t1_30 = "${team1_val[6][0]}",t1_25 = "${team1_val[7][0]}",t1_20 = "${team1_val[8][0]}",
-                                     t1_15 = "${team1_val[9][0]}",t1_10 = "${team1_val[10][0]}",t1_5 = "${team1_val[11][0]}",t1_0 = "${team1_val[12][0]}" WHERE gameid = ${parseInt(datt[j].link.ids[0])};`
-                                            db.query(sqlIn5, (err, result) => {
-                                                if (err) {
-
-
-                                                    console.log('kn', err);
-                                                }
-                                                else {
-
-
-                                                    console.log('kn32');
-
-                                                }
-                                            })
+                                         
                                             if (data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, '') == datt[j].cells[3].text[0].replace(/ /g, '') || data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, '').includes(datt[j].cells[3].text[0].replace(/ /g, '')) || datt[j].cells[3].text[0].replace(/ /g, '').includes(data2.data.regions[0].rows[h].cells[2].text[0].replace(/ /g, ''))) {
                                                 console.log('t1', parseFloat(jk[0]));
 
                                                 if (parseFloat(jk[0]) >= 60) {
                                                     console.log('t1>60', parseFloat(jk[0]));
-                                                    team1_val[0] = [team1_val[0] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team1_val[0] = [team1_val[0] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
 
                                                 }
                                                 else if (60 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 55) {
                                                     console.log('t1>55', parseFloat(jk[0]));
-                                                    team1_val[1] = [team1_val[1] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team1_val[1] = [team1_val[1] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
 
                                                 }
 
                                                 else if (55 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 50) {
                                                     console.log('t1>50', parseFloat(jk[0]));
-                                                    team1_val[2] = [team1_val[2] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team1_val[2] = [team1_val[2] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (50 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 45) {
                                                     console.log('t1>45', parseFloat(jk[0]));
-                                                    team1_val[3] = [team1_val[3] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team1_val[3] = [team1_val[3] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (45 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 40) {
                                                     console.log('t1>40', parseFloat(jk[0]));
-                                                    team1_val[4] = [team1_val[4] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team1_val[4] = [team1_val[4] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (40 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 35) {
                                                     console.log('t1>35', parseFloat(jk[0]));
-                                                    team1_val[5] = [team1_val[5] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team1_val[5] = [team1_val[5] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (35 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 30) {
                                                     console.log('t1>30', parseFloat(jk[0]));
-                                                    team1_val[6] = [team1_val[6] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team1_val[6] = [team1_val[6] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (30 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 25) {
                                                     console.log('t1>25', parseFloat(jk[0]));
-                                                    team1_val[7] = [team1_val[7] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team1_val[7] = [team1_val[7] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (25 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 20) {
                                                     console.log('t1>20', parseFloat(jk[0]));
-                                                    team1_val[8] = [team1_val[8] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team1_val[8] = [team1_val[8] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (20 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 15) {
                                                     console.log('t1>15', parseFloat(jk[0]));
-                                                    team1_val[9] = [team1_val[9] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team1_val[9] = [team1_val[9] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (15 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 10) {
                                                     console.log('t1>10', parseFloat(jk[0]));
-                                                    team1_val[10] = [team1_val[10] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team1_val[10] = [team1_val[10] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (10 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 5) {
                                                     console.log('t1>5', parseFloat(jk[0]));
-                                                    team1_val[11] = [team1_val[11] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team1_val[11] = [team1_val[11] +data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else {
                                                     console.log('t1<5', parseFloat(jk[0]));
-                                                    team1_val[12] = [team1_val[12] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team1_val[12] = [team1_val[12] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
 
 
@@ -402,57 +387,57 @@ async function add_new_data() {
                                                 console.log('t2', parseFloat(jk[0]));
                                                 if (parseFloat(jk[0]) >= 60) {
                                                     console.log('t2>60', parseFloat(jk[0]));
-                                                    team2_val[0] = [team2_val[0] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team2_val[0] = [team2_val[0] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
 
                                                 }
                                                 else if (60 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 55) {
                                                     console.log('t2>55', parseFloat(jk[0]));
-                                                    team2_val[1] = [team2_val[1] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team2_val[1] = [team2_val[1] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
 
                                                 else if (55 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 50) {
                                                     console.log('t2>50', parseFloat(jk[0]));
-                                                    team2_val[2] = [team2_val[2] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team2_val[2] = [team2_val[2] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (50 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 45) {
                                                     console.log('t2>45', parseFloat(jk[0]));
-                                                    team2_val[3] = [team2_val[3] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team2_val[3] = [team2_val[3] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (45 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 40) {
                                                     console.log('t2>40', parseFloat(jk[0]));
-                                                    team2_val[4] = [team2_val[4] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team2_val[4] = [team2_val[4] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (40 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 35) {
                                                     console.log('t2>35', parseFloat(jk[0]));
-                                                    team2_val[5] = [team2_val[5] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team2_val[5] = [team2_val[5] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (35 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 30) {
                                                     console.log('t2>30', parseFloat(jk[0]));
-                                                    team2_val[6] = [team2_val[6] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team2_val[6] = [team2_val[6] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (30 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 25) {
                                                     console.log('t2>25', parseFloat(jk[0]));
-                                                    team2_val[7] = [team2_val[7] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team2_val[7] = [team2_val[7] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (25 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 20) {
                                                     console.log('t2>20', parseFloat(jk[0]));
-                                                    team2_val[8] = [team2_val[8] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team2_val[8] = [team2_val[8] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (20 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 15) {
                                                     console.log('t2>15', parseFloat(jk[0]));
-                                                    team2_val[9] = [team2_val[9] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team2_val[9] = [team2_val[9] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (15 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 10) {
                                                     console.log('t2>10', parseFloat(jk[0]));
-                                                    team2_val[10] = [team2_val[10] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team2_val[10] = [team2_val[10] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else if (10 > parseFloat(jk[0]) && parseFloat(jk[0]) >= 5) {
                                                     console.log('t2>5', parseFloat(jk[0]));
-                                                    team2_val[11] = [team2_val[11] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team2_val[11] = [team2_val[11] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
                                                 else {
                                                     console.log('t2<5', parseFloat(jk[0]));
-                                                    team2_val[12] = [team2_val[12] + data2.data.regions[0].rows[h].cells[0].text[0] + '/']
+                                                    team2_val[12] = [team2_val[12] + data2.data.regions[0].rows[h].cells[0].text[0]+','+ data2.data.regions[0].rows[h].cells[3].text[0] + '/']
                                                 }
 
 
