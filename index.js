@@ -209,7 +209,7 @@ async function create_tables() {
 
             })
     } catch (error) {
-        console.log('erro in creating tables');
+        console.log('erro in creating tabless');
     }
 
 
