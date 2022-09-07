@@ -67,6 +67,19 @@ app.get("/api/get", (req, res) => {
 
 
             }
+            if (q[0] == 'bleague' && ful[n + 1].split('=')[0] == 'bseason') {
+                
+                const sl = `SELECT * FROM ${ful[n + 1].split('=')[1]}_table WHERE league = '${decodeURI(q[1])}' ;`
+                db.query(sl, (error, result) => {
+
+
+                    res.send(result)
+
+
+                })
+
+
+            }
 
 
             if (q[0] == 'team') {
