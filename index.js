@@ -319,8 +319,12 @@ async function add_new_data() {
                                     for (let h = 0; h < data2.data.regions[0].rows.length; h++) {
                                         console.log('lets');
 
+                                        // if (data2.data.regions[0].rows[h].cells[1].text[0].includes("2'-Strafe")) {
+                                            
+                                        // }
 
-                                        if (parseInt(datt[j].link.ids[0]), data2.data.regions[0].rows[h].cells[1].text[0].includes('Torschütze')) {
+
+                                        if (data2.data.regions[0].rows[h].cells[1].text[0].includes('Torschütze')) {
 
                                             let jk = data2.data.regions[0].rows[h].cells[0].text[0]
 
